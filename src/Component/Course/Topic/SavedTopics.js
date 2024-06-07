@@ -13,7 +13,7 @@ import PDFViewer from '../Material/PDFViewer';
 import { CiMusicNote1 } from "react-icons/ci";
 import { BsFiletypePdf, BsFiletypePpt } from "react-icons/bs";
 import EditIcon from '@mui/icons-material/Edit';
-import {  FaFileAlt} from 'react-icons/fa';
+import { FaFileAlt } from 'react-icons/fa';
 import { CiYoutube } from "react-icons/ci";
 import DeleteIcon from '@mui/icons-material/Delete';
 //edit
@@ -29,7 +29,8 @@ import { fetchEditTopicsRequest } from '../../../action/Course/Topic/FetchEditTo
 import { updateTopicsRequest } from '../../../action/Course/Topic/UpdateTopicsAction'
 import { deleteTopicsRequest } from '../../../action/Course/Topic/DeleteTopicsAction';
 //import DialogContentText from '@mui/material/DialogContentText';
-import { useParams ,useNavigate, Link} from 'react-router-dom';
+import { fetchContentUrlSuccess } from '../../../action/Course/Material/FetchContentUrlAction';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 //----------------------------------------------------------------------------------------------DELETE----------
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -37,17 +38,23 @@ import DialogContentText from '@mui/material/DialogContentText';
 import { validateTopicForm } from '../../../utils/Course/Topic/AddTopicValidation';
 import { Container } from '@mui/material';
 import { Card } from 'react-bootstrap';
+import VideoViewer from '../Material/VideoViewer';
+import AudioViewer from '../Material/AudioViewer';
 export default function SavedTopics(props) {
     // const topicsDetail=useSelector((state)=>state);
     const selectorTopicsDetail = useSelector((state) => state.fetchTopic.topics[0]);
     const [topicsDetail, setTopicsDetails] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [deleteId,setDeleteId] = useState("");
-    const navigate=useNavigate();
+    const [deleteId, setDeleteId] = useState("");
+    const navigate = useNavigate();
     const dispatch = useDispatch();
+  const [viewerModelHeader, setViewerModelHeader] = useState();
     const [errors, setErrors] = useState({});
-    const [show,setshow] = useState(false);
-    const [material_id,setMaterialIdl] = useState(false);
+  const [selectedComponent, setSelectedComponent] = useState();
+
+  const [show, setShow] = useState(false);
+
+    const [material_id, setMaterialIdl] = useState(false);
     const { id } = useParams();
     sessionStorage.setItem("userName", "karni");
 
@@ -91,7 +98,7 @@ export default function SavedTopics(props) {
     const fetchTopics = async () => {
         try {
             await
-             dispatch(fetchTopicsRequest(id));
+                dispatch(fetchTopicsRequest(id));
             setLoading(false);
         }
         catch (error) {
@@ -111,20 +118,20 @@ export default function SavedTopics(props) {
 
     //fetch topic details for edit and get using useSelector
 
-    let  topicForEdit = useSelector((state) => state.fetchEditTopic.topics);
+    let topicForEdit = useSelector((state) => state.fetchEditTopic.topics);
     // let topicForEdit= selectorTopicById;
 
     //Edit operation
     const handleEditClickOpen = (topicId) => {
         console.log("topicId", topicId);
-        
 
-    dispatch(fetchEditTopicsRequest(topicId))
-    
+
+        dispatch(fetchEditTopicsRequest(topicId))
+
         setOpen(true);
 
     };
-    useEffect(()=>{
+    useEffect(() => {
         setUpdateTopic({
             topicId: topicForEdit.topicId,
             name: topicForEdit.name,
@@ -132,8 +139,8 @@ export default function SavedTopics(props) {
             modifiedBy: sessionStorage.getItem("userName")
 
         })
-    },[topicForEdit])
-   
+    }, [topicForEdit])
+
     const handleClose = () => {
         setOpen(false);
         setUpdateTopic({
@@ -141,7 +148,7 @@ export default function SavedTopics(props) {
             name: "",
             description: "",
             modifiedBy: sessionStorage.getItem("userName")
-    
+
         })
     };
     // const handleSubmit = (event) => {
@@ -162,17 +169,17 @@ export default function SavedTopics(props) {
         console.log("lecec")
         // setTopicForEdit({...topicForEdit, modifiedBy: sessionStorage.getItem("userName")})
         const isFormValid = validateTopicForm(updateTopic, setErrors);
-   
+
         if (isFormValid) {
-          try {
-              dispatch(updateTopicsRequest(updateTopic))
-   
-      handleClose();
-   
-   
-          } catch (error) {
-            console.error('Error creating course:', error);
-          }
+            try {
+                dispatch(updateTopicsRequest(updateTopic))
+
+                handleClose();
+
+
+            } catch (error) {
+                console.error('Error creating course:', error);
+            }
         }
         handleClose();
         dispatch(fetchTopicsRequest(id));
@@ -186,56 +193,82 @@ export default function SavedTopics(props) {
         console.log("delete topic", topicId);
         dispatch(deleteTopicsRequest(topicId));
         handleDeleteClose();
-        
+
 
     }
+    const handleShow = () => setShow(true);
+    const handlePreview = (materialId, materialType, materialName) => {
+        setViewerModelHeader(materialName);
+        switch (materialType) {
+          case 'PDF':
+            setSelectedComponent(<PDFViewer material={materialId} />);
+            break;
+          case 'VIDEO':
+            // setSelectedComponent(<VideoViewer material={materialId}/>)
+            setSelectedComponent(<VideoViewer material={materialId} />)
+            break;
+          case 'AUDIO':
+            setSelectedComponent(<AudioViewer material={materialId} />)
+            break;
+          case 'PPT':
+            setSelectedComponent(<PDFViewer material={materialId} />);
+            break;
+          case 'TEXT':
+            setSelectedComponent(<PDFViewer material={materialId} />);
+            break;
+          default:
+            setSelectedComponent(<></>)
     
-  const handleDeleteClickOpen = (topicId) => {
-    setDeleteId(topicId)
-    setOpenDelete(true);
-  };
-  const handleDeleteClose = () => {
-    setOpenDelete(false);
-    setDeleteId("");
-    dispatch(fetchTopicsRequest(id));
+        }
+    
+        handleShow();
+      }
+    const handleDeleteClickOpen = (topicId) => {
+        setDeleteId(topicId)
+        setOpenDelete(true);
+    };
+    const handleDeleteClose = () => {
+        setOpenDelete(false);
+        setDeleteId("");
+        dispatch(fetchTopicsRequest(id));
 
-  };
-  //----------------------------------------------------------------------------------------------
-//   const handleNavigate=(id)=>{
-//     // id.preventDefault();
-//       navigate(`/addcontent/${id}`)
-//   }
-// -----------Model opening for pdf viewer model opening function---------//           modifued lines
- 
-const handleModelClose = () => setshow(false);
-const handleModelShow = () => setshow(true);
-// -----------Model opening for pdf viewer model opening function end---------//
- 
- 
-const handlePDFview =(materialId)=>{
-    console.log(materialId);                                              // Modified lines
-    setMaterialIdl(materialId);
-    handleModelShow();
-   }
+    };
+    //----------------------------------------------------------------------------------------------
+    //   const handleNavigate=(id)=>{
+    //     // id.preventDefault();
+    //       navigate(`/addcontent/${id}`)
+    //   }
+    // -----------Model opening for pdf viewer model opening function---------//           modifued lines
+
+    const handleModelClose = () => {setShow(false);dispatch(fetchContentUrlSuccess(null));};
+    const handleModelShow = () => setShow(true);
+    // -----------Model opening for pdf viewer model opening function end---------//
+
+
+    const handlePDFview = (materialId) => {
+        console.log(materialId);                                              // Modified lines
+        setMaterialIdl(materialId);
+        handleModelShow();
+    }
 
 
     //----------------------------------------------------------------------------------------------
 
     const divStyle = {
         boxShadow: '0px 4px 8px #23275c', // Replace #yourShadowColor with your color
-      };
+    };
     return (
         <Container fluid className='mt-5' style={divStyle}>
-            
-            
-        {/* <div> */}
+
+
+            {/* <div> */}
             {loading ? (
                 <p>Loading...</p>
             ) : (
-                
+
                 topicsDetail.map((topic, index) => (
-                   
-                   
+
+
                     <Accordion key={index}>
 
                         <AccordionSummary
@@ -247,26 +280,26 @@ const handlePDFview =(materialId)=>{
                                 <div>
                                     <EditIcon style={{ marginRight: 16 }} variant="outlined" onClick={() => handleEditClickOpen(topic.topicId)} />
                                     <DeleteIcon onClick={() => handleDeleteClickOpen(topic.topicId)} /></div></div>
-                                    {/* <DeleteIcon onClick={() => handleDelete(topic.topicId)} /></div></div> */}
+                            {/* <DeleteIcon onClick={() => handleDelete(topic.topicId)} /></div></div> */}
 
                         </AccordionSummary>
 
                         <AccordionDetails>
-                           Description : {topic.topicDescription}
-                           <ul type='none'>
-                           {topic.materials.map((material)=>(<>
-                                
-                                <li onClick={()=>{handlePDFview(material.materialId)}}>{material.materialType==='VIDEO'?<><CiYoutube  className="icon" style={{ color: 'blue', fontSize: '20px' }} /></>:material.materialType=='AUDIO'?<><CiMusicNote1 className="icon" style={{ color: 'blue' }} /></>:material.materialType=='TEXT'?<><FaFileAlt className="icon" style={{ color: 'red' }} /></>:material.materialType=='PDF'?<><BsFiletypePdf className="icon" style={{ color: 'red' }} /></>:<><BsFiletypePpt className="icon" style={{ color: 'red' }} /></>}{material.materialName}</li>
-                           </>))}
-                           </ul>
+                            Description : {topic.topicDescription}
+                            <ul type='none'>
+                                {topic.materials.map((material) => (<>
 
-                           <Link style={{marginLeft:'250px'}} to={`/addcontent/${topic.topicId}`}>Add Content</Link>
+                                    <li onClick={() => { handlePreview(material.materialId, material.materialType, material.materialName) }}>{material.materialType === 'VIDEO' ? <><CiYoutube className="icon" style={{ color: 'blue', fontSize: '20px' }} /></> : material.materialType == 'AUDIO' ? <><CiMusicNote1 className="icon" style={{ color: 'blue' }} /></> : material.materialType == 'TEXT' ? <><FaFileAlt className="icon" style={{ color: 'red' }} /></> : material.materialType == 'PDF' ? <><BsFiletypePdf className="icon" style={{ color: 'red' }} /></> : <><BsFiletypePpt className="icon" style={{ color: 'red' }} /></>}{material.materialName}</li>
+                                </>))}
+                            </ul>
+
+                            <Link style={{ marginLeft: '250px' }} to={`/addcontent/${topic.topicId}`}>Add Content</Link>
                             {/* <Button onClick={handleNavigate(topic.topicId)} >Add Content</Button> */}
                         </AccordionDetails>
 
                     </Accordion>
                 ))
-                
+
             )}
             {/* //-------------------------------------------UPDATE-------------------------------------- */}
             <Dialog
@@ -285,7 +318,7 @@ const handlePDFview =(materialId)=>{
                         autoFocus
                         required
                         margin="dense"
-                        id="name" 
+                        id="name"
                         name="name"
                         label="Course Topic"
                         type="longtext"
@@ -333,36 +366,36 @@ const handlePDFview =(materialId)=>{
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                       Are you sure you want to delete the topics ?
+                        Are you sure you want to delete the topics ?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button autoFocus onClick={handleDeleteClose}>
                         Cancel
                     </Button>
-                <Button autoFocus onClick={()=> handleDelete(deleteId)}>
+                    <Button autoFocus onClick={() => handleDelete(deleteId)}>
                         Delete
                     </Button>
                     {/* <Button autoFocus onClick={handleDeleteClose}>
                         Cancel
                     </Button> */}
-                   
+
                 </DialogActions>
             </Dialog>
 
             {/* //---------------------------------------------------PDF model------------------------------------------ */}
             <Modal show={show} onHide={handleModelClose} centered size="lg" >
-<Modal.Header closeButton>
-<Modal.Title>Modal heading</Modal.Title>                                                     {/*Modified lines */}
-</Modal.Header>
-<Modal.Body  style={{ minHeight:"83vh" }}  >
-<PDFViewer material={material_id}/>
-</Modal.Body>
-</Modal>
+                <Modal.Header closeButton>
+                    <Modal.Title>{viewerModelHeader}</Modal.Title>                                                     {/*Modified lines */}
+                </Modal.Header>
+                <Modal.Body style={{ minHeight: "83vh" }}  >
+                    {selectedComponent}
+                </Modal.Body>
+            </Modal>
 
 
 
-        {/* </div> */}
+            {/* </div> */}
         </Container>
     );
 }

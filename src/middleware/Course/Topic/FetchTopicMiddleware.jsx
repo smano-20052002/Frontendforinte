@@ -7,8 +7,11 @@ const fetchTopicsApi = ({ dispatch }) => (next) => async (action) => {
  
   if (action.type === FETCH_TOPICS_REQUEST) {
     try {
-      const response = await axios.get(`http://localhost:5199/lxp/course/${action.payload}/topic`)
-      
+      const response = await axios.get('http://localhost:5199/lxp/course/' + action.payload + '/topic', {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      });  
       console.log('API Response:', response.data); // Log the response data
       
         dispatch(fetchTopicsSuccess(response.data.data));

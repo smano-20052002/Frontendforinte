@@ -3,6 +3,7 @@ import {
     FETCH_CONTENT_URL_REQUEST,
     FETCH_CONTENT_URL_SUCCESS,
     FETCH_CONTENT_URL_FAILURE,
+    SET_CONTENT_URL_STATUS,
   } from '../../../action/Course/Material/FetchContentUrlAction';
   
   const initialState = {
@@ -10,6 +11,8 @@ import {
     content: [],
     loading: false,
     error: null,
+    isContentUrl:false,
+
     
   };
   
@@ -20,6 +23,8 @@ import {
         return{
           ...state,
           loading:true,
+          isContentUrl:false,
+
         };
   
       case FETCH_CONTENT_URL_SUCCESS:
@@ -29,15 +34,26 @@ import {
         return{
           ...state,
           content:action.payload,
+          isContentUrl:false,
+
           loading:false,
         };
       case FETCH_CONTENT_URL_FAILURE:
         return{
           ...state,
+          content:[],
           loading:false,
+          isContentUrl:false,
           error:action.payload,
         };
-        
+      case SET_CONTENT_URL_STATUS:
+        return{
+          ...state,
+         
+          loading:false,
+          isContentUrl:true,
+          
+        }
       default:
         return state;
     }

@@ -5,7 +5,7 @@ import "@react-pdf-viewer/core/lib/styles/index.css"
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { useDispatch, useSelector } from "react-redux";
 // import { Document, Page, pdfjs } from 'react-pdf/dist/esm/entry.webpack';
-import { fetchContentUrlRequest } from "../../../action/Course/Material/FetchContentUrlAction";
+import { fetchContentUrlRequest,setContentUrlStatus } from "../../../action/Course/Material/FetchContentUrlAction";
 import { Container, Overlay, Row } from "react-bootstrap";
  
 function PDFViewer(prop) {
@@ -14,17 +14,89 @@ function PDFViewer(prop) {
   const [viewpdf, setViewPdf] = useState("");
   const dispatch = useDispatch();
  
-  const pdf = useSelector((state) => state.fetchContentUrl.content);
- 
+  let pdfselector = useSelector((state) => state.fetchContentUrl.content);
+  // const [pdf,setPdf]=useState({"filePath":undefined});
   useEffect(() => {
-    dispatch(fetchContentUrlRequest(material));                     {/*modified  full code */}
-  }, [ material]);
- 
-  useEffect(() => {
+    dispatch(fetchContentUrlRequest(material));      
+    // setPdf({...pdfselector})  
+
    
-      setViewPdf(pdf.filePath);
-    console.log("pdf",pdf);
-  }, [pdf]);
+    // console.log("pdf",pdf);           {/*modified  full code */}
+  }, [ material ]);
+  // useEffect(() => {
+  //   dispatch(fetchContentUrlRequest(material));      
+  //   // setPdf({...pdfselector})  
+  //   // console.log("pdf",pdf);           {/*modified  full code */}
+  // }, []);
+ useEffect(()=>{
+  // setTimeout(()=>{
+      
+  //    setViewPdf(pdf.filePath);
+
+  // },20000)
+  if(pdfselector){
+    if(pdfselector.filePath){
+      dispatch(setContentUrlStatus())
+    // setViewPdf(pdfselector.filePath);
+
+    }
+    setViewPdf(pdfselector.filePath);
+
+
+  }
+
+ },[pdfselector])
+ useEffect(()=>{
+  // setTimeout(()=>{
+      
+  //    setViewPdf(pdf.filePath);
+
+  // },20000)
+  if(pdfselector){
+    if(pdfselector.filePath){
+      dispatch(setContentUrlStatus())
+    }
+    setViewPdf(pdfselector.filePath);
+
+
+  }
+ })
+//  useEffect(()=>{
+//   // setTimeout(()=>{
+      
+//   //    setViewPdf(pdf.filePath);
+
+//   // },20000)
+//   if(pdfselector){
+//     if(pdfselector.filePath){
+//       dispatch(setContentUrlStatus())
+//     }
+//     setViewPdf(pdfselector.filePath);
+
+
+//   }
+//  },[pdfselector.filePath])
+//  useEffect(()=>{
+//   // setTimeout(()=>{
+      
+//   //    setViewPdf(pdf.filePath);
+
+//   // },20000)
+//   if(pdfselector){
+//     if(pdfselector.filePath){
+//       dispatch(setContentUrlStatus())
+//     }
+//     setViewPdf(pdfselector.filePath);
+
+
+//   }
+//  },[viewpdf])
+  // useEffect(() => {
+  //   setTimeout(()=>{
+  //     setViewPdf(pdfselector.filePath);
+
+  //   },10000)
+  // }, []);
  
   // const newPlugin = defaultLayoutPlugin({
   //   toolbar: {
@@ -49,7 +121,7 @@ function PDFViewer(prop) {
               {viewpdf ? (
                 <Viewer fileUrl = {viewpdf} />
               ) : (
-                <div>No PDF available</div>
+                <div>Loading.....</div>
               )}
             </Worker>
           )}

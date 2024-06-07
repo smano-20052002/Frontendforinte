@@ -7,13 +7,25 @@ const fetchContentUrlApi = ({ dispatch }) => (next) => async (action) => {
  
   if (action.type ===  FETCH_CONTENT_URL_REQUEST) {
     try {
-      const response = await axios.get(`http://localhost:5199/lxp/course/material/${action.payload}`)
+      // const source = axios.CancelToken.source();
+      if(!action.payload.isContentUrl){
+        const response = await axios.get(`http://localhost:5199/lxp/course/material/${action.payload}`)
+        // const response = await axios.get(`http://localhost:5199/lxp/course/material/${action.payload}`,{ cancelToken: source.token })
       
-       console.log('API Response fetchcontenturlapi:', response.data); // Log the response data
-      
-        dispatch(fetchContentUrlSuccess(response.data.data));
-        console.log("mytopicmiddleware_fetchcontenturlapi",response.data.data)
-      
+        console.log('API Response fetchcontenturlapi:', response.data); // Log the response data
+        if(response.status==200){
+         dispatch(fetchContentUrlSuccess(response.data.data));
+         
+// source.cancel();
+
+
+
+ 
+        }
+         console.log("mytopicmiddleware_fetchcontenturlapi",response.data.data)
+       
+      }
+     
     } catch (error) {
       console.error('API Error:', error.message);
       dispatch(fetchContentUrlFailure(error.message));

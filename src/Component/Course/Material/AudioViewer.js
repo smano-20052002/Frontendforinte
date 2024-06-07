@@ -164,7 +164,11 @@ const AudioViewer = ({ material }) => {
   }, [material, dispatch]);
 
   useEffect(() => {
+    if(selectorVideoView.filePath){
     setSrc(selectorVideoView.filePath);
+
+    }
+    // setSrc(selectorVideoView.filePath);
     console.log("src", src);
     console.log("storeselector", storeselector);
   }, [selectorVideoView]);

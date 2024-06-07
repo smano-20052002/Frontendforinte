@@ -164,7 +164,10 @@ const VideoViewer = ({ material }) => {
   }, [material, dispatch]);
 
   useEffect(() => {
-    setSrc(selectorVideoView.filePath);
+    if(selectorVideoView){
+      setSrc(selectorVideoView.filePath);
+
+    }
     console.log("src", src);
     console.log("storeselector", storeselector);
   }, [selectorVideoView]);

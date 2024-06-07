@@ -258,7 +258,7 @@ function AddContentComponent() {
           name: "",
           material: null,
           createdBy: sessionStorage.getItem("userName"),
-          duration: 0
+          duration:  "04:29:41"
 
 
         })

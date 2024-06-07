@@ -32,7 +32,7 @@ import {
         return{
           ...state,
           content:action.payload,
-          isFetched:true,
+          isFetched: true,
           loading:false,
           error:null,
         };
