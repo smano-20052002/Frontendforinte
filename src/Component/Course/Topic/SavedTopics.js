@@ -44,6 +44,8 @@ export default function SavedTopics(props) {
     // const topicsDetail=useSelector((state)=>state);
     const selectorTopicsDetail = useSelector((state) => state.fetchTopic.topics[0]);
     const [topicsDetail, setTopicsDetails] = useState([]);
+    // const topicsDetailSelector = useSelector((state) => state.fetchTopic.topics[0].topics);
+
     const [loading, setLoading] = useState(false);
     const [deleteId, setDeleteId] = useState("");
     const navigate = useNavigate();
@@ -197,24 +199,24 @@ export default function SavedTopics(props) {
 
     }
     const handleShow = () => setShow(true);
-    const handlePreview = (materialId, materialType, materialName) => {
+    const handlePreview = (filePath, materialType, materialName) => {
         setViewerModelHeader(materialName);
         switch (materialType) {
           case 'PDF':
-            setSelectedComponent(<PDFViewer material={materialId} />);
+            setSelectedComponent(<PDFViewer material={filePath} />);
             break;
           case 'VIDEO':
             // setSelectedComponent(<VideoViewer material={materialId}/>)
-            setSelectedComponent(<VideoViewer material={materialId} />)
+            setSelectedComponent(<VideoViewer material={filePath} />)
             break;
           case 'AUDIO':
-            setSelectedComponent(<AudioViewer material={materialId} />)
+            setSelectedComponent(<AudioViewer material={filePath} />)
             break;
           case 'PPT':
-            setSelectedComponent(<PDFViewer material={materialId} />);
+            setSelectedComponent(<PDFViewer material={filePath} />);
             break;
           case 'TEXT':
-            setSelectedComponent(<PDFViewer material={materialId} />);
+            setSelectedComponent(<PDFViewer material={filePath} />);
             break;
           default:
             setSelectedComponent(<></>)
@@ -289,7 +291,7 @@ export default function SavedTopics(props) {
                             <ul type='none'>
                                 {topic.materials.map((material) => (<>
 
-                                    <li onClick={() => { handlePreview(material.materialId, material.materialType, material.materialName) }}>{material.materialType === 'VIDEO' ? <><CiYoutube className="icon" style={{ color: 'blue', fontSize: '20px' }} /></> : material.materialType == 'AUDIO' ? <><CiMusicNote1 className="icon" style={{ color: 'blue' }} /></> : material.materialType == 'TEXT' ? <><FaFileAlt className="icon" style={{ color: 'red' }} /></> : material.materialType == 'PDF' ? <><BsFiletypePdf className="icon" style={{ color: 'red' }} /></> : <><BsFiletypePpt className="icon" style={{ color: 'red' }} /></>}{material.materialName}</li>
+                                    <li onClick={() => { handlePreview(material.filePath, material.materialType, material.materialName) }}>{material.materialType === 'VIDEO' ? <><CiYoutube className="icon" style={{ color: 'blue', fontSize: '20px' }} /></> : material.materialType == 'AUDIO' ? <><CiMusicNote1 className="icon" style={{ color: 'blue' }} /></> : material.materialType == 'TEXT' ? <><FaFileAlt className="icon" style={{ color: 'red' }} /></> : material.materialType == 'PDF' ? <><BsFiletypePdf className="icon" style={{ color: 'red' }} /></> : <><BsFiletypePpt className="icon" style={{ color: 'red' }} /></>}{material.materialName}</li>
                                 </>))}
                             </ul>
 

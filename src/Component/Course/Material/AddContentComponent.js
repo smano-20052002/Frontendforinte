@@ -45,14 +45,14 @@ function AddContentComponent() {
   const [isDisableType, setIsDisableType] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState();
   const [viewerModelHeader, setViewerModelHeader] = useState();
-
+  const [duration,setDuration]=useState();
   const [material, setMaterial] = useState({
     topicId: id,
     materialTypeId: materialType,
     name: "",
     material: null,
     createdBy: sessionStorage.getItem("userName"),
-    duration: "04:29:41"
+    duration: "00:00:00"
 
 
   });
@@ -199,16 +199,52 @@ function AddContentComponent() {
 
   }
 
+  // const handleMaterial = (event) => {
+  //   if (event.target.files && event.target.files[0]) {
+  //     setMaterial((material) => ({
+  //       ...material,
+  //       material: event.target.files[0],
+  //     }));
+  //     const file = event.target.files[0];
+  //     console.log("po", file)
+  //     setselectedContent(file.name);
+  //     console.log("filename", selectedContent);
+  //   }
+  // };
+
   const handleMaterial = (event) => {
     if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
       setMaterial((material) => ({
         ...material,
-        material: event.target.files[0],
+        material: file,
       }));
-      const file = event.target.files[0];
-      console.log("po", file)
       setselectedContent(file.name);
-      console.log("filename", selectedContent);
+ 
+      // Check if the file is audio or video
+      if (file.type.includes('audio') || file.type.includes('video')) {
+        // Create a temporary HTML5 media element (audio or video) to fetch duration
+        const media = document.createElement(file.type.includes('audio') ? 'audio' : 'video');
+        media.src = URL.createObjectURL(file);
+        media.onloadedmetadata = () => {
+          // Fetch duration and format it as hh:mm:ss
+          let duration = media.duration;
+          let hours = Math.floor(duration / 3600);
+          let minutes = Math.floor((duration - (hours * 3600)) / 60);
+          let seconds = Math.floor(duration - (hours * 3600) - (minutes * 60));
+ 
+          hours = hours < 10 ? '0' + hours : hours;
+          minutes = minutes < 10 ? '0' + minutes : minutes;
+          seconds = seconds < 10 ? '0' + seconds : seconds;
+ 
+          setDuration(`${hours}:${minutes}:${seconds}`);
+          // Revoke the object URL to avoid memory leaks
+          URL.revokeObjectURL(media.src);
+        };
+      } else {
+        // Set default duration for non-media files
+        setDuration('01:00:00');
+      }
     }
   };
   const handleEditMaterial = (file) => {
@@ -276,24 +312,24 @@ function AddContentComponent() {
     boxShadow: '0px 4px 8px #23275c', // Replace #yourShadowColor with your color
   };
 
-  const handlePreview = (materialId, materialType, materialName) => {
+  const handlePreview = (filePath, materialType, materialName) => {
     setViewerModelHeader(materialName);
     switch (materialType) {
       case 'PDF':
-        setSelectedComponent(<PDFViewer material={materialId} />);
+        setSelectedComponent(<PDFViewer material={filePath} />);
         break;
       case 'VIDEO':
         // setSelectedComponent(<VideoViewer material={materialId}/>)
-        setSelectedComponent(<VideoViewer material={materialId} />)
+        setSelectedComponent(<VideoViewer material={filePath} />)
         break;
       case 'AUDIO':
-        setSelectedComponent(<AudioViewer material={materialId} />)
+        setSelectedComponent(<AudioViewer material={filePath} />)
         break;
       case 'PPT':
-        setSelectedComponent(<PDFViewer material={materialId} />);
+        setSelectedComponent(<PDFViewer material={filePath} />);
         break;
       case 'TEXT':
-        setSelectedComponent(<PDFViewer material={materialId} />);
+        setSelectedComponent(<PDFViewer material={filePath} />);
         break;
       default:
         setSelectedComponent(<></>)
@@ -408,7 +444,7 @@ function AddContentComponent() {
                             <h6>{content.topicName}</h6>
                           </div>
                           <div class="col">
-                            <button className='ms-1 ' onClick={() => handlePreview(content.materialId, content.materialType, content.name)}   ><IoEyeOutline fontSize={20} /></button>
+                            <button className='ms-1 ' onClick={() => handlePreview(content.filePath, content.materialType, content.name)}   ><IoEyeOutline fontSize={20} /></button>
                             <button className='ms-1 ' onClick={() => handleEditButton(content.materialId)}   ><FaRegEdit fontSize={20} /></button>
                             <button className='ms-1 ' onClick={() => handleDeleteClickOpen(content.materialId)}  ><MdOutlineDelete fontSize={20} /></button>
                           </div>

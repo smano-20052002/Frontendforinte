@@ -18,8 +18,8 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchContentUrlRequest } from '../../../action/Course/Material/FetchContentUrlAction';
+// import { useDispatch, useSelector } from "react-redux";
+// import { fetchContentUrlRequest } from '../../../action/Course/Material/FetchContentUrlAction';
 
 const Audio = styled.video`
   flex-shrink: 1;
@@ -149,29 +149,31 @@ const AudioViewer = ({ material }) => {
   const [durationSec, setDurationSec] = useState(1);
   const [elapsedSec, setElapsedSec] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [src, setSrc] = useState();
+  const [src, setSrc] = useState(material);
   const videoRef = useRef(null);
   const progressRef = useRef(null);
   const bufferRef = useRef(null);
   const containerRef = useRef(null);
+  useEffect(()=>{
+    setSrc(material)
+  },[material])
+  // const dispatch = useDispatch();
+  // const selectorVideoView = useSelector((state) => state.fetchContentUrl.content);
+  // const storeselector = useSelector((state) => state);
 
-  const dispatch = useDispatch();
-  const selectorVideoView = useSelector((state) => state.fetchContentUrl.content);
-  const storeselector = useSelector((state) => state);
+  // useEffect(() => {
+  //   dispatch(fetchContentUrlRequest(material));
+  // }, [material, dispatch]);
 
-  useEffect(() => {
-    dispatch(fetchContentUrlRequest(material));
-  }, [material, dispatch]);
+  // useEffect(() => {
+  //   if(selectorVideoView.filePath){
+  //   setSrc(selectorVideoView.filePath);
 
-  useEffect(() => {
-    if(selectorVideoView.filePath){
-    setSrc(selectorVideoView.filePath);
-
-    }
-    // setSrc(selectorVideoView.filePath);
-    console.log("src", src);
-    console.log("storeselector", storeselector);
-  }, [selectorVideoView]);
+  //   }
+  //   // setSrc(selectorVideoView.filePath);
+  //   console.log("src", src);
+  //   console.log("storeselector", storeselector);
+  // }, [selectorVideoView]);
 
   useEffect(() => {
     if (!videoRef.current) return;
